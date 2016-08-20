@@ -1,5 +1,6 @@
 package in.spidergears.android.xaddress;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -15,17 +16,26 @@ import au.com.bytecode.opencsv.CSVReader;
 public class XAddressEncoder {
     private String TAG = "XAddressEncoder";
 
-    void readCountriesCSV(){
-        InputStream is = XAddressApplication.getContext().getResources().openRawResource(R.raw.countries);
+    private Context context;
+
+    public XAddressEncoder(Context _context){
+        context = _context;
+    };
+
+    public String[] getCountryInfo( String countryCode ) {
+        InputStream is = context.getResources().openRawResource(R.raw.countries);
         CSVReader reader = new CSVReader(new InputStreamReader(is));
-        List myEntries;
-        try{
-            myEntries  = reader.readAll();
-            Log.e(TAG, "onCreate: List Entries: " + myEntries.toArray().toString() );
-        }
-        catch (IOException ioe){
+        String[] nextCountryInfo = null;
+        try {
+            while (( nextCountryInfo = reader.readNext()) != null) {
+                if (countryCode.equals(nextCountryInfo[0])) {
+                    return nextCountryInfo;
+                }
+            }
+        } catch (IOException ioe) {
             Log.e(TAG, "onCreate: IOException reading file");
         }
-
+        return null;
     }
+
 }

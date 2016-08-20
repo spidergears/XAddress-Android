@@ -2,6 +2,7 @@ package in.spidergears.android.xaddress;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,12 +13,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Arrays;
+
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
     private String TAG = "MainAcivity";
 
-    private Marker locationMarker;
-
     private GoogleMap googleMap;
+    private Marker locationMarker;
+    private XAddressEncoder xAddressEncoder;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        xAddressEncoder = new XAddressEncoder(this);
+        Log.e(TAG, "onCreate: Country Info India: " + Arrays.toString(xAddressEncoder.getCountryInfo("IN")));
+        Log.e(TAG, "onCreate: Country Info Argentina: " + Arrays.toString(xAddressEncoder.getCountryInfo("AR")));
+        Log.e(TAG, "onCreate: Country Info Sudan: " + Arrays.toString(xAddressEncoder.getCountryInfo("SD")));
     }
 
 
