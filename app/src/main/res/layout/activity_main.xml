@@ -2,19 +2,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center_horizontal|center_vertical"
     >
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/place_autocomplete_fragment"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-    />
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="in.spidergears.android.xaddress.MainActivity" />
+    <Button
+        android:id="@+id/EncodeLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Encode Location"
+        android:onClick="openPlacePicker"/>
+
+    <Button
+        android:id="@+id/DecodeLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Decode Location"/>
+
+    <!--Attributions-->
+    <!--Google-->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView3"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/poweredBy"
+        android:src="@drawable/powered_by_google_light"/>
+    <!--ThirdParty-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/thirdPartyAttrs"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 </LinearLayout>

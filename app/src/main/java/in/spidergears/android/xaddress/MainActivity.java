@@ -1,85 +1,113 @@
 package in.spidergears.android.xaddress;
 
-import android.support.v4.app.FragmentActivity;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.location.places.ui.PlacePicker;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.Locale;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+
+public class MainActivity extends AppCompatActivity {
     private String TAG = "MainAcivity";
-
-    private GoogleMap googleMap;
-    private Marker locationMarker;
-    private XAddressEncoder xAddressEncoder;
-    private PlaceAutocompleteFragment placesAutocompleteFragment;
+    private int PLACE_PICKER_REQUEST = 1;
+    private Place selectedPlace;
+    private TextView thirdPartyAttribution;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
-        placesAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-        placesAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                Log.e(TAG, "Place: " + place.getName());
-            }
+        thirdPartyAttribution = (TextView) findViewById(R.id.thirdPartyAttrs);
+        PlaceEncodingTask placeEncodingTask = new PlaceEncodingTask(this);
 
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.e(TAG, "An error occurred: " + status);
-            }
-        });
-
-        xAddressEncoder = new XAddressEncoder(this);
-        Log.e(TAG, "onCreate: Country Info India: " + Arrays.toString(xAddressEncoder.getCountryInfo("IN")));
-        Log.e(TAG, "onCreate: Country Info Argentina: " + Arrays.toString(xAddressEncoder.getCountryInfo("AR")));
-        Log.e(TAG, "onCreate: Country Info Sudan: " + Arrays.toString(xAddressEncoder.getCountryInfo("SD")));
+//        xAddressEncoder = new XAddressEncoder(this);
+//        Log.e(TAG, "onCreate: Country Info India: " + Arrays.toString(xAddressEncoder.getCountryInfo("IN")));
+//        Log.e(TAG, "onCreate: Country Info Argentina: " + Arrays.toString(xAddressEncoder.getCountryInfo("AR")));
+//        Log.e(TAG, "onCreate: Country Info Sudan: " + Arrays.toString(xAddressEncoder.getCountryInfo("SD")));
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap _googleMap) {
-        googleMap = _googleMap;
+    public void openPlacePicker(View v){
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
-            googleMap.setMyLocationEnabled(true);
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
         }
-        catch (SecurityException se){
-            Toast.makeText(MainActivity.this, "Enable location access first", Toast.LENGTH_SHORT).show();
+        catch (GooglePlayServicesRepairableException |
+                GooglePlayServicesNotAvailableException e){
+            Log.e(TAG, "openPlacePicker: Exception Occured" + e, null );
         }
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                selectedPlace = PlacePicker.getPlace(this, intent);
+                String toastMsg = String.format("Place: %s", selectedPlace.toString());
+                Log.e(TAG, "onActivityResult: " + selectedPlace.toString() );
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+
+                String attributions = (String) selectedPlace.getAttributions();
+                if (attributions != null)
+                    thirdPartyAttribution.setText(Html.fromHtml(attributions));
+            }
+        }
+    }
+
+    private class PlaceEncodingTask extends AsyncTask<Place, String, String> {//Input, Progress, Return
+        private Context context;
+        public PlaceEncodingTask (Context _context){
+            context = _context;
+        }
+        protected void onPreExecute() {
+            //TODO: Show Progress Dialog box
+            Log.e(TAG, "onPreExecute: " );
+            super.onPreExecute();
+        }
+
+        protected String doInBackground(Place... _place) {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            Place place = _place[0];
+            String countryCode;
+            String countryState;
+            try {
+                //TODO: Reverse geocode place
+                publishProgress("Getting Address...");
+                Address address = geocoder.getFromLocation(place.getLatLng().latitude, place.getLatLng().longitude, 1).get(0);
+                //Address address = geocoder.getFromLocation(18.5204, 73.8567, 1).get(0);
+                //TODO: Parse Api response to get State and Country
+                countryCode = address.getCountryCode();
+                countryState = address.getAdminArea();
+                publishProgress("Encoding Address...");
+                //TODO: Encode with XAddressEncoder
+            }
+            catch (IOException ioe){
+                ioe.printStackTrace();
+            }
+          return "Encoded Response";
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            //TODO: Publish progress
+        }
+
+        protected void onPostExecute() {
+            //TODO: Show Progress Dialog box
+        }
     }
 }
