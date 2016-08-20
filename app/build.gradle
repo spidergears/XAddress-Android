@@ -24,6 +24,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services-maps:9.4.0'
+    compile 'com.google.android.gms:play-services-places:9.4.0'
 
     // https://mvnrepository.com/artifact/net.sf.opencsv/opencsv
     compile group: 'net.sf.opencsv', name: 'opencsv', version: '2.3'

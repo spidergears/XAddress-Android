@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,7 +25,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap googleMap;
     private Marker locationMarker;
     private XAddressEncoder xAddressEncoder;
-
+    private PlaceAutocompleteFragment placesAutocompleteFragment;
 
 
     @Override
@@ -32,6 +36,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        placesAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        placesAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.e(TAG, "Place: " + place.getName());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.e(TAG, "An error occurred: " + status);
+            }
+        });
+
         xAddressEncoder = new XAddressEncoder(this);
         Log.e(TAG, "onCreate: Country Info India: " + Arrays.toString(xAddressEncoder.getCountryInfo("IN")));
         Log.e(TAG, "onCreate: Country Info Argentina: " + Arrays.toString(xAddressEncoder.getCountryInfo("AR")));
