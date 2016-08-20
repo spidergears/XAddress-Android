@@ -2,7 +2,6 @@ package in.spidergears.android.xaddress;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,13 +11,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
     private String TAG = "MainAcivity";
@@ -35,17 +27,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        InputStream is = getResources().openRawResource(R.raw.countries);
-        CSVReader reader = new CSVReader(new InputStreamReader(is));
-        List myEntries;
-        try{
-            myEntries  = reader.readAll();
-            Log.e(TAG, "onCreate: List Entries: " + myEntries.toArray().toString() );
-        }
-        catch (IOException ioe){
-            Log.e(TAG, "onCreate: IOException reading file");
-        }
     }
 
 
