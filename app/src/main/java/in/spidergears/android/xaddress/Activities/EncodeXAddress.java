@@ -1,4 +1,4 @@
-package in.spidergears.android.xaddress;
+package in.spidergears.android.xaddress.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,29 +18,33 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
+import in.spidergears.android.xaddress.GreenDAO.Country;
+import in.spidergears.android.xaddress.GreenDAO.CountryDao;
+import in.spidergears.android.xaddress.GreenDAO.DaoSession;
+import in.spidergears.android.xaddress.R;
+import in.spidergears.android.xaddress.ServiceObjects.CountriesQueryHelper;
+import in.spidergears.android.xaddress.XAddressApplication;
 
-public class MainActivity extends AppCompatActivity {
+
+public class EncodeXAddress extends AppCompatActivity {
     private String TAG = "MainAcivity";
     private int PLACE_PICKER_REQUEST = 1;
     private Place selectedPlace;
     private TextView thirdPartyAttribution;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_encode_xaddress);
 
         thirdPartyAttribution = (TextView) findViewById(R.id.thirdPartyAttrs);
         PlaceEncodingTask placeEncodingTask = new PlaceEncodingTask(this);
-
-//        xAddressEncoder = new XAddressEncoder(this);
-//        Log.e(TAG, "onCreate: Country Info India: " + Arrays.toString(xAddressEncoder.getCountryInfo("IN")));
-//        Log.e(TAG, "onCreate: Country Info Argentina: " + Arrays.toString(xAddressEncoder.getCountryInfo("AR")));
-//        Log.e(TAG, "onCreate: Country Info Sudan: " + Arrays.toString(xAddressEncoder.getCountryInfo("SD")));
     }
 
     public void openPlacePicker(View v){
